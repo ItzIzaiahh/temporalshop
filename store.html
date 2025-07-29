@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crate Shop - Minecraft Realm</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1a1a1a;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+    .subheading {
+      background: linear-gradient(90deg, #006eff, #00cfff);
+      padding: 20px;
+      margin: 0 auto 40px auto;
+      max-width: 900px;
+      border-radius: 20px;
+      text-align: left;
+      font-size: 1.1rem;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    }
+    .subheading p {
+      margin: 6px 0;
+      line-height: 1.6;
+      color: #fff;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+      gap: 20px;
+    }
+    .crate {
+      background-color: #2e2e2e;
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 300px;
+      text-align: center;
+      box-shadow: 0 0 12px rgba(79, 195, 247, 0.3);
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+    }
+    .crate:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 0 25px rgba(79, 195, 247, 0.5);
+    }
+    .crate:hover .hover-box {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      transition: opacity 0.3s ease;
+    }
+    .crate h2 {
+      color: #4fc3f7;
+      margin-bottom: 5px;
+    }
+    .price-container {
+      font-weight: bold;
+      font-size: 1.6rem;
+      color: #81d4fa;
+      margin-bottom: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .final-price {
+      font-size: 1.6rem;
+      color: #81d4fa;
+      line-height: 1;
+    }
+    .original-price {
+      color: #ff4444;
+      text-decoration: line-through;
+      font-weight: normal;
+      font-size: 1rem;
+      opacity: 0;
+      user-select: none;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      margin-left: 6px;
+    }
+    .qty-btn {
+      background-color: #444;
+      color: #ddd;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.2s ease;
+      margin: 0 3px 10px 3px;
+    }
+    .qty-btn:hover {
+      background-color: #4fc3f7;
+      color: white;
+    }
+    .qty-btn.selected {
+      background-color: #4fc3f7;
+      color: white;
+    }
+    button.add-to-cart-btn {
+      background-color: #4fc3f7;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background-color 0.2s ease;
+      user-select: none;
+    }
+    button.add-to-cart-btn:hover {
+      background-color: #81d4fa;
+    }
+    .preview-wrapper {
+      position: relative;
+      margin-bottom: 10px;
+    }
+    .preview-wrapper img {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      pointer-events: none;
+      user-select: none;
+      cursor: default;
+    }
+    .hover-box {
+      display: block;
+      opacity: 0;
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      background-color: #333;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+      width: 250px;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      user-select: none;
+    }
+    .hover-box img {
+      width: 100%;
+      border-radius: 5px;
+      margin-bottom: 8px;
+      user-select: none;
+    }
+    .hover-box p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #ddd;
+      user-select: none;
+    }
+    #cart {
+      max-width: 900px;
+      margin: 0 auto 40px auto;
+      background-color: #2e2e2e;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(79,195,247,0.3);
+      font-size: 1rem;
+      color: #fff;
+    }
+    #cart h3 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #4fc3f7;
+    }
+    #cart-items {
+      max-height: 250px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #444;
+    }
+    .cart-item span.name {
+      flex: 2;
+    }
+    .cart-item input.qty-cart-input {
+      width: 50px;
+      padding: 4px;
+      border-radius: 4px;
+      border: none;
+      text-align: center;
+      margin-right: 15px;
+      font-size: 1rem;
+      background-color: #444;
+      color: #fff;
+    }
+    .cart-item span.price {
+      flex: 1;
+      text-align: right;
+      font-weight: bold;
+      color: #81d4fa;
+    }
+    .cart-item button.remove-btn {
+      background: none;
+      border: none;
+      color: #ff4444;
+      font-size: 1.4rem;
+      cursor: pointer;
+      user-select: none;
+      margin-left: 10px;
+    }
+    #cart-total {
+      font-weight: bold;
+      font-size: 1.3rem;
+      text-align: right;
+      color: #4fc3f7;
+      margin-bottom: 15px;
+    }
+    #checkout-btn {
+      background-color: #4fc3f7;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      user-select: none;
+      display: block;
+      margin-left: auto;
+      transition: background-color 0.2s ease;
+    }
+    #checkout-btn:hover {
+      background-color: #81d4fa;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #bbb;
+    }
+    .price-container .original-price {
+      margin-left: 6px;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div style="text-align:center; padding-top:20px; padding-bottom:10px;">
+  <img src="https://i.imgur.com/qfObfqJ.png" alt="Logo" style="max-width:100%; height:auto;">
+</div>
+
+<div class="subheading">
+  <p><strong>Support the Realm with Crate Purchases!</strong></p>
+  <p>Every crate contains epic gear and boosts your gameplay experience.</p>
+  <p>Proceeds go directly toward server hosting, plugins, and future updates.</p>
+</div>
+
+<div class="container">
+
+  <div class="crate" data-base-price="1.99" data-name="Common Crate">
+    <div class="preview-wrapper">
+      <div class="hover-box">
+        <img src="file:///C:/Users/Isaac/OneDrive/Pictures/Screenshots/Screenshot%202025-07-29%20150211.png" alt="Common Crate Contents" />
+        <p>Includes: Iron Gear, 1 totem of undying, 12 golden apples </p>
+      </div>
+      <img src="https://minecraft.wiki/images/thumb/Lime_Shulker_Box_JE2_BE2.png/150px-Lime_Shulker_Box_JE2_BE2.png?595bd" alt="Common Crate" />
+    </div>
+    <h2>Common Crate</h2>
+    <div class="price-container">
+      <span class="final-price">$1.99</span>
+      <span class="original-price">$1.99</span>
+    </div>
+
+```
+<div>
+  Quantity:
+  <button type="button" class="qty-btn selected" data-multiplier="1" data-discount="0">1x</button>
+  <button type="button" class="qty-btn" data-multiplier="2" data-discount="0.05">2x</button>
+  <button type="button" class="qty-btn" data-multiplier="5" data-discount="0.07">5x</button>
+  <button type="button" class="qty-btn" data-multiplier="10" data-discount="0.10">10x</button>
+  <button type="button" class="qty-btn" data-multiplier="20" data-discount="0.15">20x</button>
+</div>
+
+<button class="add-to-cart-btn" type="button">Add to Cart</button>
+```
+
+  </div>
+
+  <div class="crate" data-base-price="5.99" data-name="Rare Crate">
+    <div class="preview-wrapper">
+      <div class="hover-box">
+        <img src="file:///C:/Users/Isaac/OneDrive/Pictures/Screenshots/Screenshot%202025-07-29%20150156.png" alt="Rare Crate Contents" />
+        <p>Includes: Diamond Gear, Enchanted Golden Apples, Elytra, 5 totem of undying </p>
+      </div>
+      <img src="https://minecraft.wiki/images/thumb/Light_Blue_Shulker_Box_JE2_BE2.png/150px-Light_Blue_Shulker_Box_JE2_BE2.png?54b37" alt="Rare Crate" />
+    </div>
+    <h2>Rare Crate</h2>
+    <div class="price-container">
+      <span class="final-price">$5.99</span>
+      <span class="original-price">$5.99</span>
+    </div>
+
+```
+<div>
+  Quantity:
+  <button type="button" class="qty-btn selected" data-multiplier="1" data-discount="0">1x</button>
+  <button type="button" class="qty-btn" data-multiplier="2" data-discount="0.05">2x</button>
+  <button type="button" class="qty-btn" data-multiplier="5" data-discount="0.07">5x</button>
+  <button type="button" class="qty-btn" data-multiplier="10" data-discount="0.10">10x</button>
+  <button type="button" class="qty-btn" data-multiplier="20" data-discount="0.15">20x</button>
+</div>
+
+<button class="add-to-cart-btn" type="button">Add to Cart</button>
+```
+
+  </div>
+
+  <div class="crate" data-base-price="9.99" data-name="Legendary Crate">
+    <div class="preview-wrapper">
+      <div class="hover-box">
+        <img src="file:///C:/Users/Isaac/OneDrive/Pictures/Screenshots/Screenshot%202025-07-29%20150106.png" alt="Legendary Crate Contents" />
+        <p>Includes: Netherite Gear, Elytra, 10 Totem of Undying, Enchanted Golden Apples</p>
+      </div>
+      <img src="https://minecraft.wiki/images/Orange_Shulker_Box_JE1_BE1.png?e1f7c" alt="Legendary Crate" />
+    </div>
+    <h2>Legendary Crate</h2>
+    <div class="price-container">
+      <span class="final-price">$9.99</span>
+      <span class="original-price">$9.99</span>
+    </div>
+
+```
+<div>
+  Quantity:
+  <button type="button" class="qty-btn selected" data-multiplier="1" data-discount="0">1x</button>
+  <button type="button" class="qty-btn" data-multiplier="2" data-discount="0.05">2x</button>
+  <button type="button" class="qty-btn" data-multiplier="5" data-discount="0.07">5x</button>
+  <button type="button" class="qty-btn" data-multiplier="10" data-discount="0.10">10x</button>
+  <button type="button" class="qty-btn" data-multiplier="20" data-discount="0.15">20x</button>
+</div>
+
+<button class="add-to-cart-btn" type="button">Add to Cart</button>
+```
+
+  </div>
+</div>
+
+<!-- Cart section -->
+
+<div id="cart" style="display:none;">
+  <h3>Your Cart</h3>
+  <div id="cart-items"></div>
+  <div id="cart-total">Total: $0.00</div>
+  <form id="paypal-form" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+    <input type="hidden" name="cmd" value="_cart" />
+    <input type="hidden" name="upload" value="1" />
+    <input type="hidden" name="business" value="temporalpvp000@gmail.com" />
+    <!-- Dynamic item inputs added by JS -->
+    <button type="submit" id="checkout-btn">Checkout with PayPal</button>
+  </form>
+</div>
+
+<footer>
+  ⚠️ After purchasing, make sure to include your <strong>Minecraft Username</strong> in the PayPal note.<br />
+  You’ll receive your crate loot manually in the realm.
+</footer>
+
+<div style="background-color:#1a1a1a; color:#ccc; text-align:center; padding:40px 20px; font-size:0.85rem;">
+  <span style="font-weight:bold; color:#fff; margin-left:8px;">TEMPORAL PVP</span><br />
+  <span style="font-size:0.75rem; color:#888;">Not associated with Mojang or Microsoft</span><br /><br />
+  <a href="#" style="color:#3399ff; text-decoration:none; margin:0 10px;">PRIVACY POLICY</a>
+  <a href="#" style="color:#3399ff; text-decoration:none; margin:0 10px;">SUPPORT</a>
+  <a href="#" style="color:#3399ff; text-decoration:none; margin:0 10px;">TERMS OF SERVICE</a>
+  <a href="#" style="color:#3399ff; text-decoration:none; margin:0 10px;">REFUND POLICY</a>
+</div>
+
+<script>
+  // Handle quantity selection per crate
+  document.querySelectorAll('.crate').forEach(crate => {
+    const basePrice = parseFloat(crate.dataset.basePrice);
+    const originalPriceSpan = crate.querySelector('.original-price');
+    const finalPriceSpan = crate.querySelector('.final-price');
+    const qtyButtons = crate.querySelectorAll('.qty-btn');
+
+    qtyButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        qtyButtons.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+
+        const qty = parseInt(button.dataset.multiplier);
+        const discountPercent = parseFloat(button.dataset.discount);
+
+        const fullPrice = basePrice * qty;
+        const discountedPrice = fullPrice * (1 - discountPercent);
+
+        // Update prices
+        originalPriceSpan.textContent = `$${fullPrice.toFixed(2)}`;
+        finalPriceSpan.textContent = `$${discountedPrice.toFixed(2)}`;
+
+        // Show original price only if quantity > 1
+        if (qty === 1) {
+          originalPriceSpan.style.opacity = '0';
+        } else {
+          originalPriceSpan.style.opacity = '1';
+        }
+      });
+    });
+
+    // Hide original price initially
+    originalPriceSpan.style.opacity = '0';
+  });
+
+  // Cart data structure
+  let cart = [];
+
+  // Utility to render cart
+  function renderCart() {
+    const cartDiv = document.getElementById('cart');
+    const cartItemsContainer = document.getElementById('cart-items');
+    const cartTotalDisplay = document.getElementById('cart-total');
+    const paypalForm = document.getElementById('paypal-form');
+
+    if (cart.length === 0) {
+      cartDiv.style.display = 'none';
+      return;
+    } else {
+      cartDiv.style.display = 'block';
+    }
+
+    cartItemsContainer.innerHTML = '';
+    let total = 0;
+
+    cart.forEach((item, index) => {
+      const itemTotal = item.price * item.quantity;
+      total += itemTotal;
+
+      const div = document.createElement('div');
+      div.className = 'cart-item';
+
+      div.innerHTML = `
+        <span class="name">${item.name}</span>
+        <input type="number" min="1" class="qty-cart-input" value="${item.quantity}" data-index="${index}" />
+        <span class="price">$${itemTotal.toFixed(2)}</span>
+        <button class="remove-btn" data-index="${index}" title="Remove item">&times;</button>
+      `;
+
+      cartItemsContainer.appendChild(div);
+    });
+
+    cartTotalDisplay.textContent = `Total: $${total.toFixed(2)}`;
+
+    // Clear previous PayPal inputs (except static)
+    [...paypalForm.querySelectorAll('input[name^="item_name"], input[name^="amount"], input[name^="quantity"]')].forEach(el => el.remove());
+
+    // Add PayPal inputs for each cart item
+    cart.forEach((item, i) => {
+      // PayPal cart uses 1-based indexing for item numbers
+      const idx = i + 1;
+
+      // item_name_n, amount_n, quantity_n
+      const nameInput = document.createElement('input');
+      nameInput.type = 'hidden';
+      nameInput.name = `item_name_${idx}`;
+      nameInput.value = item.name;
+      paypalForm.appendChild(nameInput);
+
+      const amountInput = document.createElement('input');
+      amountInput.type = 'hidden';
+      amountInput.name = `amount_${idx}`;
+      amountInput.value = item.price.toFixed(2);
+      paypalForm.appendChild(amountInput);
+
+      const quantityInput = document.createElement('input');
+      quantityInput.type = 'hidden';
+      quantityInput.name = `quantity_${idx}`;
+      quantityInput.value = item.quantity;
+      paypalForm.appendChild(quantityInput);
+    });
+  }
+
+  // Add to cart button handler
+  document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const crateDiv = button.closest('.crate');
+      const name = crateDiv.dataset.name;
+      const basePrice = parseFloat(crateDiv.dataset.basePrice);
+
+      // Find selected quantity button
+      const selectedQtyBtn = crateDiv.querySelector('.qty-btn.selected');
+      const qty = parseInt(selectedQtyBtn.dataset.multiplier);
+      const discountPercent = parseFloat(selectedQtyBtn.dataset.discount);
+      const fullPrice = basePrice * qty;
+      const discountedPrice = fullPrice * (1 - discountPercent);
+
+      // Check if item already in cart with same quantity
+      const existingIndex = cart.findIndex(item => item.name === name && item.price === discountedPrice);
+
+      if (existingIndex > -1) {
+        // Update quantity
+        cart[existingIndex].quantity += qty;
+      } else {
+        // Add new item
+        cart.push({
+          name,
+          quantity: qty,
+          price: discountedPrice,
+        });
+      }
+
+      renderCart();
+    });
+  });
+
+  // Cart items quantity change & remove handler
+  document.getElementById('cart-items').addEventListener('input', e => {
+    if (e.target.classList.contains('qty-cart-input')) {
+      const idx = parseInt(e.target.dataset.index);
+      let newQty = parseInt(e.target.value);
+      if (isNaN(newQty) || newQty < 1) newQty = 1;
+      e.target.value = newQty;
+      cart[idx].quantity = newQty;
+      renderCart();
+    }
+  });
+
+  document.getElementById('cart-items').addEventListener('click', e => {
+    if (e.target.classList.contains('remove-btn')) {
+      const idx = parseInt(e.target.dataset.index);
+      cart.splice(idx, 1);
+      renderCart();
+    }
+  });
+</script>
+
+</body>
+</html>
+
