@@ -265,10 +265,11 @@
 
 <div class="container">
 
+  <!-- Common Crate -->
   <div class="crate" data-base-price="1.99" data-name="Common Crate">
     <div class="preview-wrapper">
       <div class="hover-box">
-        <img src="file:///C:/Users/Isaac/OneDrive/Pictures/Screenshots/Screenshot%202025-07-29%20150211.png" alt="Common Crate Contents" />
+        <img src="https://i.imgur.com/Itrx6xt.png" alt="Common Crate Contents" />
         <p>Includes: Iron Gear, 1 totem of undying, 12 golden apples </p>
       </div>
       <img src="https://minecraft.wiki/images/thumb/Lime_Shulker_Box_JE2_BE2.png/150px-Lime_Shulker_Box_JE2_BE2.png?595bd" alt="Common Crate" />
@@ -278,7 +279,6 @@
       <span class="final-price">$1.99</span>
       <span class="original-price">$1.99</span>
     </div>
-
     <div>
       Quantity:
       <button type="button" class="qty-btn selected" data-multiplier="1" data-discount="0">1x</button>
@@ -287,14 +287,14 @@
       <button type="button" class="qty-btn" data-multiplier="10" data-discount="0.10">10x</button>
       <button type="button" class="qty-btn" data-multiplier="20" data-discount="0.15">20x</button>
     </div>
-
     <button class="add-to-cart-btn" type="button">Add to Cart</button>
   </div>
 
+  <!-- Rare Crate -->
   <div class="crate" data-base-price="5.99" data-name="Rare Crate">
     <div class="preview-wrapper">
       <div class="hover-box">
-        <img src="file:///C:/Users/Isaac/OneDrive/Pictures/Screenshots/Screenshot%202025-07-29%20150156.png" alt="Rare Crate Contents" />
+        <img src="https://i.imgur.com/pIsID95.png" alt="Rare Crate Contents" />
         <p>Includes: Diamond Gear, Enchanted Golden Apples, Elytra, 5 totem of undying </p>
       </div>
       <img src="https://minecraft.wiki/images/thumb/Light_Blue_Shulker_Box_JE2_BE2.png/150px-Light_Blue_Shulker_Box_JE2_BE2.png?54b37" alt="Rare Crate" />
@@ -304,7 +304,6 @@
       <span class="final-price">$5.99</span>
       <span class="original-price">$5.99</span>
     </div>
-
     <div>
       Quantity:
       <button type="button" class="qty-btn selected" data-multiplier="1" data-discount="0">1x</button>
@@ -313,14 +312,14 @@
       <button type="button" class="qty-btn" data-multiplier="10" data-discount="0.10">10x</button>
       <button type="button" class="qty-btn" data-multiplier="20" data-discount="0.15">20x</button>
     </div>
-
     <button class="add-to-cart-btn" type="button">Add to Cart</button>
   </div>
 
+  <!-- Legendary Crate -->
   <div class="crate" data-base-price="9.99" data-name="Legendary Crate">
     <div class="preview-wrapper">
       <div class="hover-box">
-        <img src="file:///C:/Users/Isaac/OneDrive/Pictures/Screenshots/Screenshot%202025-07-29%20150106.png" alt="Legendary Crate Contents" />
+        <img src="https://i.imgur.com/e3EpCBe.png" alt="Legendary Crate Contents" />
         <p>Includes: Netherite Gear, Elytra, 10 Totem of Undying, Enchanted Golden Apples</p>
       </div>
       <img src="https://minecraft.wiki/images/Orange_Shulker_Box_JE1_BE1.png?e1f7c" alt="Legendary Crate" />
@@ -330,7 +329,6 @@
       <span class="final-price">$9.99</span>
       <span class="original-price">$9.99</span>
     </div>
-
     <div>
       Quantity:
       <button type="button" class="qty-btn selected" data-multiplier="1" data-discount="0">1x</button>
@@ -339,13 +337,12 @@
       <button type="button" class="qty-btn" data-multiplier="10" data-discount="0.10">10x</button>
       <button type="button" class="qty-btn" data-multiplier="20" data-discount="0.15">20x</button>
     </div>
-
     <button class="add-to-cart-btn" type="button">Add to Cart</button>
   </div>
+
 </div>
 
 <!-- Cart section -->
-
 <div id="cart" style="display:none;">
   <h3>Your Cart</h3>
   <div id="cart-items"></div>
@@ -354,7 +351,6 @@
     <input type="hidden" name="cmd" value="_cart" />
     <input type="hidden" name="upload" value="1" />
     <input type="hidden" name="business" value="temporalpvp000@gmail.com" />
-    <!-- Dynamic item inputs added by JS -->
     <button type="submit" id="checkout-btn">Checkout with PayPal</button>
   </form>
 </div>
@@ -374,7 +370,7 @@
 </div>
 
 <script>
-  // Handle quantity selection per crate
+  // Quantity and price handling, cart handling
   document.querySelectorAll('.crate').forEach(crate => {
     const basePrice = parseFloat(crate.dataset.basePrice);
     const originalPriceSpan = crate.querySelector('.original-price');
@@ -392,180 +388,73 @@
         const fullPrice = basePrice * qty;
         const discountedPrice = fullPrice * (1 - discountPercent);
 
-        // Update prices
         originalPriceSpan.textContent = `$${fullPrice.toFixed(2)}`;
         finalPriceSpan.textContent = `$${discountedPrice.toFixed(2)}`;
-
-        // Show original price only if quantity > 1
-        if (qty === 1) {
-          originalPriceSpan.style.opacity = '0';
-        } else {
-          originalPriceSpan.style.opacity = '1';
-        }
+        originalPriceSpan.style.opacity = qty === 1 ? '0' : '1';
       });
     });
-
-    // Hide original price initially
     originalPriceSpan.style.opacity = '0';
   });
 
-  // Cart data structure
   let cart = [];
-
-  // Utility to render cart
   function renderCart() {
     const cartDiv = document.getElementById('cart');
     const cartItemsContainer = document.getElementById('cart-items');
     const cartTotalDisplay = document.getElementById('cart-total');
     const paypalForm = document.getElementById('paypal-form');
 
-    if (cart.length === 0) {
-      cartDiv.style.display = 'none';
-      return;
-    } else {
-      cartDiv.style.display = 'block';
-    }
+    if(cart.length===0){cartDiv.style.display='none';return;}else{cartDiv.style.display='block';}
 
-    cartItemsContainer.innerHTML = '';
-    let total = 0;
-
-    cart.forEach((item, index) => {
-      const itemTotal = item.price * item.quantity;
-      total += itemTotal;
-
-      const div = document.createElement('div');
-      div.className = 'cart-item';
-
-      div.innerHTML = `
-        <span class="name">${item.name}</span>
-        <input type="number" min="1" class="qty-cart-input" value="${item.quantity}" data-index="${index}" />
-        <span class="price">$${itemTotal.toFixed(2)}</span>
-        <button class="remove-btn" data-index="${index}">&times;</button>
-      `;
-
+    cartItemsContainer.innerHTML='';let total=0;
+    cart.forEach((item,index)=>{
+      const itemTotal=item.price*item.quantity;total+=itemTotal;
+      const div=document.createElement('div');div.className='cart-item';
+      div.innerHTML=`<span class="name">${item.name}</span><input type="number" min="1" class="qty-cart-input" value="${item.quantity}" data-index="${index}" /><span class="price">$${itemTotal.toFixed(2)}</span><button class="remove-btn" data-index="${index}">&times;</button>`;
       cartItemsContainer.appendChild(div);
     });
+    cartTotalDisplay.textContent=`Total: $${total.toFixed(2)}`;
 
-    cartTotalDisplay.textContent = `Total: $${total.toFixed(2)}`;
-
-    // Remove old PayPal inputs except the fixed ones
-    [...paypalForm.querySelectorAll('input[name^="item_name_"], input[name^="amount_"], input[name^="quantity_"]')].forEach(el => el.remove());
-
-    // Add inputs for PayPal
-    cart.forEach((item, i) => {
-      const index = i + 1;
-      // PayPal expects item price to be unit price, quantity separately
-      const unitPrice = item.price;
-
-      // item_name_n
-      const inputName = document.createElement('input');
-      inputName.type = 'hidden';
-      inputName.name = `item_name_${index}`;
-      inputName.value = item.name;
-      paypalForm.appendChild(inputName);
-
-      // amount_n
-      const inputAmount = document.createElement('input');
-      inputAmount.type = 'hidden';
-      inputAmount.name = `amount_${index}`;
-      inputAmount.value = unitPrice.toFixed(2);
-      paypalForm.appendChild(inputAmount);
-
-      // quantity_n
-      const inputQty = document.createElement('input');
-      inputQty.type = 'hidden';
-      inputQty.name = `quantity_${index}`;
-      inputQty.value = item.quantity;
-      paypalForm.appendChild(inputQty);
+    [...paypalForm.querySelectorAll('input[name^="item_name_"], input[name^="amount_"], input[name^="quantity_"]')].forEach(el=>el.remove());
+    cart.forEach((item,i)=>{
+      const idx=i+1;
+      const unitPrice=item.price;
+      const inputName=document.createElement('input');inputName.type='hidden';inputName.name=`item_name_${idx}`;inputName.value=item.name;
+      const inputAmount=document.createElement('input');inputAmount.type='hidden';inputAmount.name=`amount_${idx}`;inputAmount.value=unitPrice.toFixed(2);
+      const inputQty=document.createElement('input');inputQty.type='hidden';inputQty.name=`quantity_${idx}`;inputQty.value=item.quantity;
+      paypalForm.append(inputName,inputAmount,inputQty);
     });
   }
 
-  // Handle Add to Cart button clicks
-  document.querySelectorAll('.crate').forEach(crate => {
-    const addBtn = crate.querySelector('.add-to-cart-btn');
-    const basePrice = parseFloat(crate.dataset.basePrice);
-    const name = crate.dataset.name;
-    const qtyButtons = crate.querySelectorAll('.qty-btn');
+  document.querySelectorAll('.add-to-cart-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const crate=btn.closest('.crate');
+      const name=crate.dataset.name;
+      const price=parseFloat(crate.querySelector('.final-price').textContent.replace('$',''));
+      const qty=parseInt(crate.querySelector('.qty-btn.selected').dataset.multiplier);
 
-    addBtn.addEventListener('click', () => {
-      // Find selected qty button
-      const selectedBtn = crate.querySelector('.qty-btn.selected');
-      if (!selectedBtn) return;
-
-      const qty = parseInt(selectedBtn.dataset.multiplier);
-      const discountPercent = parseFloat(selectedBtn.dataset.discount);
-
-      // Calculate discounted price total
-      const fullPrice = basePrice * qty;
-      const discountedPrice = fullPrice * (1 - discountPercent);
-
-      // Calculate unit price AFTER discount
-      const unitPrice = discountedPrice / qty;
-
-      // Check if item with same name and unit price already in cart
-      const existingIndex = cart.findIndex(item => item.name === name && item.price === unitPrice);
-
-      if (existingIndex > -1) {
-        cart[existingIndex].quantity += qty;
-      } else {
-        cart.push({
-          name,
-          quantity: qty,
-          price: unitPrice,
-        });
-      }
-
+      const existing=cart.find(i=>i.name===name);
+      if(existing){existing.quantity+=qty;}else{cart.push({name:name,price:price,quantity:qty});}
       renderCart();
-    });
-
-    // Also update displayed prices if user clicks qty buttons after initial load
-    qtyButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        // Reset other qty buttons in same crate
-        qtyButtons.forEach(btn => btn.classList.remove('selected'));
-        button.classList.add('selected');
-
-        // Calculate and update price display here
-        const qty = parseInt(button.dataset.multiplier);
-        const discountPercent = parseFloat(button.dataset.discount);
-
-        const fullPrice = basePrice * qty;
-        const discountedPrice = fullPrice * (1 - discountPercent);
-
-        const originalPriceSpan = crate.querySelector('.original-price');
-        const finalPriceSpan = crate.querySelector('.final-price');
-
-        originalPriceSpan.textContent = `$${fullPrice.toFixed(2)}`;
-        finalPriceSpan.textContent = `$${discountedPrice.toFixed(2)}`;
-
-        if (qty === 1) {
-          originalPriceSpan.style.opacity = '0';
-        } else {
-          originalPriceSpan.style.opacity = '1';
-        }
-      });
     });
   });
 
-  // Handle cart quantity changes and remove buttons
-  document.getElementById('cart-items').addEventListener('input', e => {
-    if (e.target.classList.contains('qty-cart-input')) {
-      const index = parseInt(e.target.dataset.index);
-      let val = parseInt(e.target.value);
-      if (isNaN(val) || val < 1) val = 1;
-      cart[index].quantity = val;
-      renderCart();
+  document.getElementById('cart-items').addEventListener('click', e=>{
+    if(e.target.classList.contains('remove-btn')){
+      const index=parseInt(e.target.dataset.index);
+      cart.splice(index,1);renderCart();
     }
   });
 
-  document.getElementById('cart-items').addEventListener('click', e => {
-    if (e.target.classList.contains('remove-btn')) {
-      const index = parseInt(e.target.dataset.index);
-      cart.splice(index, 1);
-      renderCart();
+  document.getElementById('cart-items').addEventListener('change', e=>{
+    if(e.target.classList.contains('qty-cart-input')){
+      const index=parseInt(e.target.dataset.index);
+      let val=parseInt(e.target.value);if(isNaN(val)||val<1){val=1;e.target.value='1';}
+      cart[index].quantity=val;renderCart();
     }
   });
 </script>
 
 </body>
 </html>
+
+
